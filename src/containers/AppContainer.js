@@ -91,43 +91,32 @@ class AppContainer extends Component {
     e.preventDefault();
     const userId = e.target.name;
 
-    //These need to pull firstname/lastname from
-    // const form = e.target;
-    // const body = serialize(form, { hash: true });
-
-    // Create headers to set the content type to json
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
-    // Set options, and stringify the body to JSON
     const options = {
       headers,
       method: 'DELETE'
-      //body: JSON.stringify(body),
     };
 
-    // Before performing the fetch, set isFetching to true
     this.setState({ isFetching: true });
 
     fetch(`https://reqres.in/api/users/${userId}`, options)
       .then(response => {
-        // If response not okay, throw an error
         if (!response.ok) {
           throw new Error(`${response.status} ${response.statusText}`);
         }
-        console.log('Received response: ', response);
-        // Otherwise, extract the response into json
 
         let newUsers = this.state.users.filter(function(el) {
           return el.id != userId;
         });
+
         this.setState({
           isFetching: false,
           users: newUsers
         });
       })
       .catch(error => {
-        // Set error in state & log to console
         console.log(error);
         this.setState({
           isFetching: false,
@@ -151,34 +140,27 @@ class AppContainer extends Component {
     const form = e.target;
     const body = serialize(form, { hash: true });
     const userId = body.id;
-    console.log('body', body);
-    // Create headers to set the content type to json
+
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
 
-    // Set options, and stringify the body to JSON
     const options = {
       headers,
       method: 'PUT',
       body: JSON.stringify(body)
     };
 
-    // Before performing the fetch, set isFetching to true
     this.setState({ isFetching: true });
 
     fetch(`https://reqres.in/api/users/${userId}`, options)
       .then(response => {
-        // If response not okay, throw an error
         if (!response.ok) {
           throw new Error(`${response.status} ${response.statusText}`);
         }
 
-        // Otherwise, extract the response into json
         return response.json();
       })
       .then(json => {
-        // Update the user list and isFetching.
-        // Reset the form in a callback after state is set.
         let newUsers = [];
         this.state.users.forEach(user => {
           if (user.id == userId) {
@@ -199,7 +181,6 @@ class AppContainer extends Component {
         );
       })
       .catch(error => {
-        // Set error in state & log to console
         console.log(error);
         this.setState({
           isFetching: false,

@@ -17,6 +17,15 @@ class UserForm extends Component {
     };
   }
 
+  componentWillReceiveProps(newProps) {
+    let user = findUser(newProps.users, newProps.isEditing);
+    this.setState({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      avatar: user.avatar
+    });
+  }
+
   onChangeInput = e => {
     this.setState({
       [e.target.name]: e.target.value
@@ -25,18 +34,7 @@ class UserForm extends Component {
 
   render() {
     const { onSubmit, error, header, isEditing, users } = this.props;
-
     const { first_name, last_name, avatar } = this.state;
-
-    // if (isEditing) {
-    //   this.setState({
-    //
-    //   })
-    //   let user = findUser(users, isEditing);
-    //   first_name = user.first_name;
-    //   last_name = user.last_name;
-    //   avatar = user.avatar;
-    // }
 
     return (
       <form className="container" onSubmit={onSubmit}>
