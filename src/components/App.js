@@ -1,22 +1,26 @@
-import React from "react";
-import JumbotronFluid from "./elements/JumbotronFluid";
-import UserList from "./UserList";
-import UserForm from "./UserForm";
+import React from 'react';
+import JumbotronFluid from './elements/JumbotronFluid';
+import UserList from './UserList';
+import UserForm from './UserForm';
 
-const App = ({
-  users,
-  isFetching,
-  error,
-  onAddUser,
-  onDeleteUser,
-  onShowEdit,
-  isEditing
-}) => (
+const App = (
+  {
+    users,
+    isFetching,
+    error,
+    onAddUser,
+    onDeleteUser,
+    onEditUser,
+    onShowEdit,
+    isEditing
+  }
+) => (
   <div className="App">
     <JumbotronFluid
       heading="User CRUD"
       lead="Using an API for User CRUD operations in React Applications"
     />
+
     <UserList
       users={users}
       isFetching={isFetching}
@@ -24,7 +28,19 @@ const App = ({
       onShowEdit={onShowEdit}
     />
     <br />
-    <UserForm onSubmit={onAddUser} error={error} />
+
+    {isEditing
+      ? <UserForm
+          users={users}
+          isEditing={isEditing}
+          header="Edit"
+          onSubmit={onEditUser}
+          error={error}
+        />
+      : null}
+
+    <br />
+    <UserForm header="Create new" onSubmit={onAddUser} error={error} />
   </div>
 );
 
