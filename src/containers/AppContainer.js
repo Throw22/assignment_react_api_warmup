@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import App from '../components/App';
-import serialize from 'form-serialize';
+import React, { Component } from "react";
+import App from "../components/App";
+import serialize from "form-serialize";
 
 class AppContainer extends Component {
   constructor() {
@@ -11,7 +11,8 @@ class AppContainer extends Component {
     this.state = {
       users: [],
       isFetching: false,
-      error: null
+      error: null,
+      isEditing: null
     };
   }
 
@@ -23,7 +24,7 @@ class AppContainer extends Component {
     // users, then update state which triggers re-render.
     // Add a delay to the URL and reset isFetching upon
     // completion of the request.
-    fetch('https://reqres.in/api/users?delay=1')
+    fetch("https://reqres.in/api/users?delay=1")
       .then(response => response.json())
       .then(json => {
         this.setState({
@@ -41,19 +42,19 @@ class AppContainer extends Component {
 
     // Create headers to set the content type to json
     const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     // Set options, and stringify the body to JSON
     const options = {
       headers,
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(body)
     };
 
     // Before performing the fetch, set isFetching to true
     this.setState({ isFetching: true });
 
-    fetch('https://reqres.in/api/users', options)
+    fetch("https://reqres.in/api/users", options)
       .then(response => {
         // If response not okay, throw an error
         if (!response.ok) {
@@ -96,12 +97,12 @@ class AppContainer extends Component {
 
     // Create headers to set the content type to json
     const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     // Set options, and stringify the body to JSON
     const options = {
       headers,
-      method: 'DELETE'
+      method: "DELETE"
       //body: JSON.stringify(body),
     };
 
@@ -114,7 +115,7 @@ class AppContainer extends Component {
         if (!response.ok) {
           throw new Error(`${response.status} ${response.statusText}`);
         }
-        console.log('Received response: ', response);
+        console.log("Received response: ", response);
         // Otherwise, extract the response into json
 
         let newUsers = this.state.users.filter(function(el) {
@@ -135,11 +136,78 @@ class AppContainer extends Component {
       });
   };
 
+  onShowEdit = e => {
+    const userId = e.target.name;
+    this.setState({ isEditing: userId });
+  };
+
+  onUpdateUser = e => {
+    e.preventDefault();
+
+    const form = e.target;
+    const body = serialize(form, { hash: true });
+    const userId = e.target.name;
+    // Create headers to set the content type to json
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+
+    // Set options, and stringify the body to JSON
+    const options = {
+      headers,
+      method: "PUT",
+      body: JSON.stringify(body)
+    };
+
+    // Before performing the fetch, set isFetching to true
+    this.setState({ isFetching: true });
+
+    fetch(`https://reqres.in/api/users/${userId}`, options)
+      .then(response => {
+        // If response not okay, throw an error
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        // Otherwise, extract the response into json
+        return response.json();
+      })
+      .then(json => {
+        // Update the user list and isFetching.
+        // Reset the form in a callback after state is set.
+        let newUsers = [];
+        this.state.users.forEach(user => {
+          if (user.id == userId) {
+            newUsers.push(json);
+          } else {
+            newUsers.push(user);
+          }
+        });
+        this.setState(
+          {
+            isFetching: false,
+            users: newUsers
+          },
+          () => {
+            form.reset();
+          }
+        );
+      })
+      .catch(error => {
+        // Set error in state & log to console
+        console.log(error);
+        this.setState({
+          isFetching: false,
+          error
+        });
+      });
+  };
+
   render() {
     return (
       <App
         onAddUser={this.onAddUser}
         onDeleteUser={this.onDeleteUser}
+        onShowEdit={this.onShowEdit}
         {...this.state}
       />
     );
