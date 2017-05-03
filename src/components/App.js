@@ -39,8 +39,8 @@ const App = (
         />
       : null}
 
-    <br />
     <UserForm header="Create new" onSubmit={onAddUser} error={error} />
+
   </div>
 );
 

@@ -1,27 +1,43 @@
-import React, { Component } from "react";
-import Input from "./elements/Input";
-import InputGroup from "./elements/InputGroup";
-import Button from "./elements/Button";
-import Alert from "./elements/Alert";
-import Showable from "./elements/Showable";
-import { findUser } from "../helpers/userHelper";
+import React, { Component } from 'react';
+import Input from './elements/Input';
+import InputGroup from './elements/InputGroup';
+import Button from './elements/Button';
+import Alert from './elements/Alert';
+import Showable from './elements/Showable';
+import { findUser } from '../helpers/userHelper';
 
 class UserForm extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    let user = findUser(props.users, props.isEditing);
     this.state = {
-      first_name: "",
-      last_name: "",
-      avatar: ""
+      first_name: user.first_name,
+      last_name: user.last_name,
+      avatar: user.avatar
     };
   }
 
-  onChangeInput = () => {};
+  onChangeInput = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
 
   render() {
     const { onSubmit, error, header, isEditing, users } = this.props;
-    let user = findUser(users, isEditing);
+
     const { first_name, last_name, avatar } = this.state;
+
+    // if (isEditing) {
+    //   this.setState({
+    //
+    //   })
+    //   let user = findUser(users, isEditing);
+    //   first_name = user.first_name;
+    //   last_name = user.last_name;
+    //   avatar = user.avatar;
+    // }
+
     return (
       <form className="container" onSubmit={onSubmit}>
         <h1>{header} User</h1>
@@ -32,13 +48,21 @@ class UserForm extends Component {
         </Showable>
         <Input name="id" type="hidden" value={isEditing} />
         <InputGroup name="first_name" labelText="First Name">
-          <Input name="first_name" value={first_name} />
+          <Input
+            name="first_name"
+            value={first_name}
+            onChange={this.onChangeInput}
+          />
         </InputGroup>
         <InputGroup name="last_name" labelText="Last Name">
-          <Input name="last_name" value={last_name} />
+          <Input
+            name="last_name"
+            value={last_name}
+            onChange={this.onChangeInput}
+          />
         </InputGroup>
         <InputGroup name="avatar" labelText="Photo Link">
-          <Input name="avatar" value={avatar} />
+          <Input name="avatar" value={avatar} onChange={this.onChangeInput} />
         </InputGroup>
         <Button type="submit" color="primary">{header} User</Button>
       </form>
